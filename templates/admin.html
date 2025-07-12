@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Swap - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/static/style.css" rel="stylesheet">
+    <script src="/static/script.js"></script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-blue-900 text-white py-4">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-bold">Skill Swap Platform</h1>
+            <nav class="mt-4">
+                <a href="{{ url_for('profile') }}" class="text-blue-300 hover:text-white mx-2">Profile</a>
+                <a href="{{ url_for('browse') }}" class="text-blue-300 hover:text-white mx-2">Browse</a>
+                <a href="{{ url_for('requests') }}" class="text-blue-300 hover:text-white mx-2">Requests</a>
+                <a href="{{ url_for('admin') }}" class="text-blue-300 hover:text-white mx-2">Admin</a>
+                <a href="{{ url_for('logout') }}" class="text-blue-300 hover:text-white mx-2">Logout</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4 text-blue-900">Admin Dashboard</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <p class="text-{{ 'green' if category == 'success' else 'red' }}-600 mb-4">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <h3 class="text-lg font-semibold mb-2 text-blue-900">Users</h3>
+            <ul class="list-disc pl-5 mb-4">
+                {% for user in users %}
+                    <li class="text-gray-700">{{ user['name'] }} ({{ user['username'] }})
+                        <form method="POST" action="{{ url_for('admin') }}" class="inline">
+                            <input type="hidden" name="action" value="ban_user">
+                            <input type="hidden" name="user_id" value="{{ user['id'] }}">
+                            <button type="submit" class="text-red-500 hover:underline">Ban</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+            <h3 class="text-lg font-semibold mb-2 text-blue-900">Skills</h3>
+            <ul class="list-disc pl-5 mb-4">
+                {% for skill in skills %}
+                    <li class="text-gray-670">{{ skill['skill'] }} by {{ skill['name'] }} ({{ skill['type'] }})
+                        <form method="POST" action="{{ url_for('admin') }}" class="inline">
+                            <input type="hidden" name="action" value="reject_skill">
+                            <input type="hidden" name="skill_id" value="{{ skill['id'] }}">
+                            <button type="submit" class="text-red-500 hover:underline">Reject</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+            <h3 class="text-lg font-semibold mb-2 text-blue-900">Swaps</h3>
+            <ul class="list-disc pl-5 mb-4">
+                {% for swap in swaps %}
+                    <li class="text-gray-700">From {{ swap['requester_name'] }} to {{ swap['receiver_name'] }}: {{ swap['status'] }}</li>
+                {% endfor %}
+            </ul>
+            <h3 class="text-lg font-semibold mb-2 text-blue-900">Messages</h3>
+            <ul class="list-disc pl-5 mb-4">
+                {% for message in messages %}
+                    <li class="text-gray-700">{{ message['message'] }} ({{ message['created_at'] }})</li>
+                {% endfor %}
+            </ul>
+            <form method="POST" action="{{ url_for('admin') }}" class="mb-4">
+                <input type="hidden" name="action" value="send_message">
+                <textarea slicing name="message" placeholder="Send platform-wide message" class="w-full border rounded px-3 py-2"></textarea>
+                <button type="submit" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Send Message</button>
+            </form>
+            <a href="{{ url_for('admin_report') }}" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onclick="downloadReport()">Download Report</a>
+        </div>
+    </main>
+    <footer class="bg-blue-900 text-white text-center py-4">
+        <p>© 2025 Skill Swap Platform</p>
+    </footer>
+</body>
+</html>

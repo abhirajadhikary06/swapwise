@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Swap - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-blue-900 text-white py-4">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-bold">Skill Swap Platform</h1>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+            <h2 class="text-xl font-semibold mb-4 text-blue-900">Login</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <p class="text-{{ 'green' if category == 'success' else 'red' }}-600 mb-4">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700">Username</label>
+                    <input type="text" name="username" id="username" class="w-full border rounded px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-700">Password</label>
+                    <input type="password" name="password" id="password" class="w-full border rounded px-3 py-2" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Login</button>
+            </form>
+            <p class="mt-4 text-center">Don't have an account? <a href="{{ url_for('signup') }}" class="text-blue-500 hover:underline">Sign up</a></p>
+        </div>
+    </main>
+    <footer class="bg-blue-900 text-white text-center py-4">
+        <p>© 2025 Skill Swap Platform</p>
+    </footer>
+</body>
+</html>

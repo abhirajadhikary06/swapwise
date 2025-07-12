@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Swap - Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-blue-900 text-white py-4">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-bold">Skill Swap Platform</h1>
+            <nav class="mt-4">
+                <a href="{{ url_for('profile') }}" class="text-blue-300 hover:text-white mx-2">Profile</a>
+                <a href="{{ url_for('browse') }}" class="text-blue-300 hover:text-white mx-2">Browse</a>
+                <a href="{{ url_for('requests') }}" class="text-blue-300 hover:text-white mx-2">Requests</a>
+                {% if session.get('is_admin') %}
+                    <a href="{{ url_for('admin') }}" class="text-blue-300 hover:text-white mx-2">Admin</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="text-blue-300 hover:text-white mx-2">Logout</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4 text-blue-900">Your Profile</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <p class="text-{{ 'green' if category == 'success' else 'red' }}-600 mb-4">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="POST" action="{{ url_for('profile') }}">
+                <input type="hidden" name="update_profile" value="1">
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700">Name</label>
+                    <input type="text" name="name" id="name" value="{{ user['name'] }}" class="w-full border rounded px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label for="location" class="block text-gray-700">Location</label>
+                    <input type="text" name="location" id="location" value="{{ user['location'] }}" class="w-full border rounded px-3 py-2">
+                </div>
+                <div class="mb-4">
+                    <label for="availability" class="block acquistalo text-gray-700">Availability</label>
+                    <input type="text" name="availability" id="availability" value="{{ user['availability'] }}" class="w-full border rounded px-3 py-2">
+                </div>
+                <div class="mb-4">
+                    <label class="inline-flex items-center">
+                        
+                    </label>
+                </div>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update Profile</button>
+            </form>
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold mb-2 text-blue-900">Skills Offered</h3>
+                <ul class="list-disc pl-5">
+                    {% for skill in skills_offered %}
+                        <li class="text-gray-700">{{ skill['skill'] }}
+                            <form method="POST" action="{{ url_for('profile') }}" class="inline">
+                                <input type="hidden" name="delete_skill" value="1">
+                                <input type="hidden" name="skill_id" value="{{ skill['id'] }}">
+                                <button type="submit" class="text-red-500 hover:underline">Delete</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <form method="POST" action="{{ url_for('profile') }}" class="mt-4">
+                    <input type="hidden" name="add_skill" value="1">
+                    <input type="hidden" name="skill_type" value="offered">
+                    <input type="text" name="skill" placeholder="Add new skill" class="border rounded px-3 py-2">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add</button>
+                </form>
+            </div>
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold mb-2 text-blue-900">Skills Wanted</h3>
+                <ul class="list-disc pl-5">
+                    {% for skill in skills_wanted %}
+                        <li class="text-gray-700">{{ skill['skill'] }}
+                            <form method="POST" action="{{ url_for('profile') }}" class="inline">
+                                <input type="hidden" name="delete_skill" value="1">
+                                <input type="hidden" name="skill_id" value="{{ skill['id'] }}">
+                                <button type="submit" class="text-red-500 hover:underline">Delete</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <form method="POST" action="{{ url_for('profile') }}" class="mt-4">
+                    <input type="hidden" name="add_skill" value="1">
+                    <input type="hidden" name="skill_type" value="wanted">
+                    <input type="text" name="skill" placeholder="Add new skill" class="border rounded px-3 py-2">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-blue-900 text-white text-center py-4">
+        <p>© 2025 Skill Swap Platform</p>
+    </footer>
+</body>
+</html>

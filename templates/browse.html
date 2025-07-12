@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Swap - Browse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/static/style.css" rel="stylesheet">
+    <script src="/static/script.js"></script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-blue-900 text-white py-4">
+        <div class="container mx-auto px-4">
+            <h1 class="text-2xl font-bold">Skill Swap Platform</h1>
+            <nav class="mt-4 flex flex-wrap gap-4">
+                <a href="{{ url_for('profile') }}" class="text-blue-300 hover:text-white transition-colors">Profile</a>
+                <a href="{{ url_for('browse') }}" class="text-blue-300 hover:text-white transition-colors">Browse</a>
+                <a href="{{ url_for('requests') }}" class="text-blue-300 hover:text-white transition-colors">Requests</a>
+                {% if session.get('is_admin') %}
+                    <a href="{{ url_for('admin') }}" class="text-blue-300 hover:text-white transition-colors">Admin</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="text-blue-300 hover:text-white transition-colors">Logout</a>
+            </nav>
+        </div>
+    </header natuurlijk
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4 text-blue-900">Browse Skills</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <p class="text-{{ 'green' if category == 'success' else 'red' }}-600 mb-4 p-2 rounded">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="GET" action="{{ url_for('browse') }}" class="mb-6 flex flex-col md:flex-row gap-2">
+                <input type="text" name="search" placeholder="Search skills (e.g., Photoshop, Excel)" value="{{ search }}" class="border rounded px-3 py-2 flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Search</button>
+            </form>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% if users %}
+                    {% for user in users %}
+                        <div class="bg-gray-50 p-4 rounded-lg shadow hover:shadow-lg transition-shadow">
+                            <h3 class="text-lg font-semibold text-blue-900">{{ user['name'] }}</h3>
+                            <p class="text-gray-600">Location: {{ user['location'] or 'Not specified' }}</p>
+                            <p class="text-gray-600">Availability: {{ user['availability'] or 'Not specified' }}</p>
+                            <p class="text-gray-600">Skill: {{ user['skill'] }} ({{ user['type'] | capitalize }})</p>
+                            <button onclick="openSwapModal({{ user['id'] }}, '{{ user['skill'] | escape }}', {{ user['skill_id'] }})" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors w-full">Request Swap</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-600 col-span-full text-center">No skills found. Try a different search term.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div id="swapModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                <h3 class="text-lg font-semibold mb-4 text-blue-900">Request Skill Swap</h3>
+                <div id="modalError" class="hidden text-red-600 mb-4"></div>
+                <form method="POST" action="{{ url_for('swap') }}" id="swapForm">
+                    <input type="hidden" name="action" value="request">
+                    <input type="hidden" name="receiver_id" id="receiver_id">
+                    <input type="hidden" name="receiver_skill_id" id="receiver_skill_id">
+                    <div class="mb-4">
+                        <label for="requester_skill_id" class="block text-gray-700 font-medium">Your Skill Offer</label>
+                        <select name="requester_skill_id" id="requester_skill_id" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="" disabled selected>Select a skill</option>
+                        </select>
+                    </div>
+                    <p class="text-gray-600 mb-4">Requesting: <span id="skill_name" class="font-medium"></span></p>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="closeSwapModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-colors">Cancel</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">Send Request</button>
+                    </div>
+                </form>
+                <div id="modalLoading" class="hidden text-center mt-4">
+                    <svg class="animate-spin h-5 w-5 text-blue-500 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span>Loading...</span>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-blue-900 text-white text-center py-4">
+        <p>© 2025 Skill Swap Platform</p>
+    </footer>
+</body>
+</html>
