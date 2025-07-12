@@ -247,7 +247,7 @@ def admin_report():
     users = conn.execute('SELECT * FROM users').fetchall()
     swaps = conn.execute('SELECT s.*, u1.name as requester_name, u2.name as receiver_name, s1.skill as requester_skill, s2.skill as receiver_skill FROM swaps s JOIN users u1 ON s.requester_id = u1.id JOIN users u2 ON s.receiver_id = u2.id JOIN skills s1 ON s.requester_skill_id = s1.id JOIN skills s2 ON s.receiver_skill_id = s2.id').fetchall()
     conn.close()
-    report = "Skill Swap Platform Report\n\n"
+    report = "SkillWise Report\n\n"
     report += "Users:\n"
     for user in users:
         report += f"ID: {user['id']}, Username: {user['username']}, Name: {user['name']}, Banned: {user['is_banned']}\n"
